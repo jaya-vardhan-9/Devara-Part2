@@ -55,6 +55,12 @@ const ContactSection: React.FC = () => {
 
   const socialLinks = [
     {
+      name:'email',
+      icon:Mail,
+      url:'',
+      color:'hover:text-white',
+    },
+    {
       name: 'GitHub',
       icon: Github,
       url: 'https://github.com',
@@ -117,120 +123,18 @@ const ContactSection: React.FC = () => {
           </p>
         </motion.div>
 
-        {/* Contact Info & Social Links */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="mb-16"
-        >
-          <div className="glass-effect rounded-xl p-8 max-w-4xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* Contact Information */}
-              <div className="space-y-6">
-                <h3 className="text-2xl font-bold mb-6 text-white">Get in Touch</h3>
-                
-                <div className="space-y-4">
-                  <motion.div 
-                    whileHover={{ x: 10 }}
-                    className="flex items-center space-x-4"
-                  >
-                    <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center">
-                      <Mail className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <div className="font-semibold text-white">Email</div>
-                      <div className="text-gray-300">alex.thompson@devops.dev</div>
-                    </div>
-                  </motion.div>
-
-                  <motion.div 
-                    whileHover={{ x: 10 }}
-                    className="flex items-center space-x-4"
-                  >
-                    <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center">
-                      <Phone className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <div className="font-semibold text-white">Phone</div>
-                      <div className="text-gray-300">+1 (555) 123-4567</div>
-                    </div>
-                  </motion.div>
-
-                  <motion.div 
-                    whileHover={{ x: 10 }}
-                    className="flex items-center space-x-4"
-                  >
-                    <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center">
-                      <MapPin className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <div className="font-semibold text-white">Location</div>
-                      <div className="text-gray-300">San Francisco, CA</div>
-                    </div>
-                  </motion.div>
-
-                  <motion.div 
-                    whileHover={{ x: 10 }}
-                    className="flex items-center space-x-4"
-                  >
-                    <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center">
-                      <Clock className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <div className="font-semibold text-white">Response Time</div>
-                      <div className="text-gray-300">Within 24 hours</div>
-                    </div>
-                  </motion.div>
-                </div>
-              </div>
-
-              {/* Social Links */}
-              <div className="space-y-6">
-                <h3 className="text-2xl font-bold mb-6 text-white">Follow Me</h3>
-                <div className="grid grid-cols-1 gap-4">
-                  {socialLinks.map((social, index) => {
-                    const IconComponent = social.icon;
-                    return (
-                      <motion.a
-                        key={social.name}
-                        href={social.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        initial={{ opacity: 0, x: 50 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: index * 0.1 }}
-                        whileHover={{ 
-                          scale: 1.05,
-                          backgroundColor: "rgba(255, 255, 255, 0.1)"
-                        }}
-                        whileTap={{ scale: 0.95 }}
-                        className={`flex items-center space-x-4 p-4 glass-effect rounded-lg transition-all duration-200 ${social.color} border border-white/10 hover:border-white/30`}
-                      >
-                        <IconComponent className="w-6 h-6" />
-                        <span className="font-medium text-lg">{social.name}</span>
-                      </motion.a>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-
+       
         {/* Dual Contact Forms */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="">
           {/* General Contact Form */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="glass-effect rounded-xl p-8 slide-in-left"
+            className="glass-effect rounded-xl  p-8 slide-in-left"
           >
-            <div className="flex items-center space-x-3 mb-8">
+            <div className="flex items-center justify-center space-x-3 mb-8">
               <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center">
                 <Mail className="w-6 h-6 text-white" />
               </div>
@@ -306,7 +210,7 @@ const ContactSection: React.FC = () => {
             </form>
           </motion.div>
 
-          {/* 1:1 Booking Form */}
+          {/* 1:1 Booking Form
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -438,9 +342,50 @@ const ContactSection: React.FC = () => {
                 <span>Request Consultation</span>
               </motion.button>
             </form>
-          </motion.div>
+          </motion.div> */}
         </div>
       </div>
+
+       {/* Contact Info & Social Links */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="mt-16"
+        >
+          <div className="w-1/2 glass-effect rounded-xl p-8 max-w-4xl mx-auto">
+              {/* Social Links */}
+              <div className="space-y-6">
+                <div className="flex justify-center justify-around">
+                  {socialLinks.map((social, index) => {
+                    const IconComponent = social.icon;
+                    return (
+                      <motion.a
+                        key={social.name}
+                        href={social.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        initial={{ opacity: 0, x: 50 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: index * 0.1 }}
+                        whileHover={{ 
+                          scale: 1.05,
+                          backgroundColor: "rgba(255, 255, 255, 0.1)"
+                        }}
+                        whileTap={{ scale: 0.95 }}
+                        className={`flex items-center space-x-4 p-4 glass-effect rounded-lg transition-all duration-200 ${social.color} border border-white/10 hover:border-white/30`}
+                      >
+                        <IconComponent className="w-6 h-6" />
+                      </motion.a>
+                    );
+                  })}
+                </div>
+              </div>
+          </div>
+        </motion.div>
+
     </section>
   );
 };

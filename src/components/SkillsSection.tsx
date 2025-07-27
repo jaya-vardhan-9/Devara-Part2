@@ -138,16 +138,7 @@ const SkillsSection: React.FC = () => {
           transition={{ delay: 0.8 }}
           className="mt-16 text-center"
         >
-          <div className="glass-effect rounded-xl p-8 max-w-4xl mx-auto">
-            <h3 className="text-2xl font-bold mb-4 text-sky-400">
-              Continuous Learning Philosophy
-            </h3>
-            <p className="text-gray-300 text-lg">
-              Technology evolves rapidly, and so do I. Each skill represents countless hours of 
-              hands-on experience, certifications, and real-world problem solving. Click on any 
-              skill to explore related projects, tutorials, and insights.
-            </p>
-          </div>
+          
         </motion.div>
       </div>
     </section>

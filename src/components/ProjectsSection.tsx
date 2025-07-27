@@ -1,9 +1,16 @@
-import React from 'react';
+import React, { useRef, useState, useEffect, useLayoutEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ExternalLink, Github, BookOpen, Star, GitFork } from 'lucide-react';
+import {
+  ExternalLink,
+  Github,
+  BookOpen,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react';
 
 const ProjectsSection: React.FC = () => {
   const projects = [
+    // ... (Your projects array remains the same)
     {
       id: 1,
       title: 'Kubernetes Multi-Cloud Deployment',
@@ -41,7 +48,7 @@ const ProjectsSection: React.FC = () => {
       blog: 'https://hashnode.com',
       stars: 203,
       forks: 67,
-      featured: false
+      featured: true
     },
     {
       id: 4,
@@ -54,7 +61,7 @@ const ProjectsSection: React.FC = () => {
       blog: 'https://hashnode.com',
       stars: 156,
       forks: 43,
-      featured: false
+      featured: true
     },
     {
       id: 5,
@@ -80,198 +87,240 @@ const ProjectsSection: React.FC = () => {
       blog: 'https://hashnode.com',
       stars: 145,
       forks: 38,
-      featured: true
+      featured: false
     }
   ];
 
+  const featured = projects.filter((p) => p.featured);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [projectWidth, setProjectWidth] = useState(0);
+  const [isHovering, setIsHovering] = useState(false);
+
+  const total = featured.length;
+  // Create a looped array for the infinite effect. The middle section is the "real" one.
+  const looped = total > 0 ? [...featured, ...featured, ...featured] : [];
+
+  // 1. Calculate the responsive width of a single project card
+  useLayoutEffect(() => {
+    if (scrollRef.current) {
+      // Find the first element with the 'project-card' class
+      const firstProject = scrollRef.current.querySelector('.project-card');
+      if (firstProject) {
+        setProjectWidth(firstProject.clientWidth);
+      }
+    }
+  }, [featured]); // Recalculate if the featured projects change
+
+  // 2. Initialize scroll position to the start of the middle section
+  useEffect(() => {
+    if (projectWidth > 0 && scrollRef.current) {
+      const baseOffset = total * projectWidth;
+      scrollRef.current.scrollLeft = baseOffset;
+    }
+  }, [projectWidth, total]);
+
+  // 3. Autoscroll logic with hover-to-pause
+  useEffect(() => {
+    if (isHovering || projectWidth === 0 || total === 0) return;
+
+    const interval = setInterval(() => {
+      if (scrollRef.current) {
+        // Use scrollBy for continuous movement
+        scrollRef.current.scrollBy({ left: projectWidth, behavior: 'smooth' });
+      }
+    }, 1500);
+
+    return () => clearInterval(interval);
+  }, [isHovering, projectWidth, total]);
+
+  // 4. Main scroll handler to update active index and reset the loop
+  const handleScroll = () => {
+    // Clear any existing timeout to debounce
+    if (scrollTimeoutRef.current) {
+      clearTimeout(scrollTimeoutRef.current);
+    }
+
+    const container = scrollRef.current;
+    if (!container || projectWidth === 0) return;
+
+    const baseOffset = total * projectWidth;
+    const currentScroll = container.scrollLeft;
+
+    // Update active index based on the closest card
+    const relativeScroll = currentScroll - baseOffset;
+    const newIndex = Math.round(relativeScroll / projectWidth);
+    setActiveIndex((newIndex + total) % total);
+
+    // Set a timeout to check for reset only after the scroll has stopped
+    scrollTimeoutRef.current = setTimeout(() => {
+      // Thresholds for jumping
+      const scrollEndThreshold = baseOffset * 2 - projectWidth / 2;
+      const scrollStartThreshold = baseOffset - projectWidth / 2;
+
+      // If scrolled to the third block, jump back to the second
+      if (container.scrollLeft >= scrollEndThreshold) {
+        container.scrollLeft = container.scrollLeft - baseOffset;
+      } 
+      // If scrolled to the first block, jump forward to the second
+      else if (container.scrollLeft <= scrollStartThreshold) {
+        container.scrollLeft = container.scrollLeft + baseOffset;
+      }
+    }, 150); // 150ms delay is usually enough to detect scroll end
+  };
+    
+  // Helper to navigate with arrows and dots
+  const scrollToIndex = (index: number) => {
+    const container = scrollRef.current;
+    if (!container || projectWidth === 0) return;
+
+    const baseOffset = total * projectWidth;
+    // Calculate the absolute target position in the middle block
+    const targetScroll = baseOffset + (index * projectWidth);
+
+    container.scrollTo({ left: targetScroll, behavior: 'smooth' });
+  };
+  
+  const handlePrev = () => {
+    // To handle the case where activeIndex is 0 and we want to go to the last item
+    const newIndex = (activeIndex - 1 + total) % total;
+    scrollToIndex(newIndex);
+  };
+
+  const handleNext = () => {
+    const newIndex = (activeIndex + 1) % total;
+    scrollToIndex(newIndex);
+  };
+
+
   return (
-    <section id="projects" className="section-height py-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-16"
+    <section className="py-20" id="projects">
+      <div className="max-w-7xl mx-auto px-4">
+        <h2 className="text-4xl font-bold text-center mb-8">
+          Featured Projects
+        </h2>
+
+        <div 
+          className="relative mb-12"
+          onMouseEnter={() => setIsHovering(true)}
+          onMouseLeave={() => setIsHovering(false)}
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 gradient-text">
-            Featured Projects
-          </h2>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Real-world DevOps solutions that demonstrate expertise in infrastructure automation, 
-            container orchestration, and modern deployment practices.
-          </p>
-        </motion.div>
-
-        {/* Featured Projects */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-          {projects.filter(p => p.featured).map((project, index) => (
-            <motion.div
-              key={project.id}
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.2 }}
-              className="glass-effect rounded-xl overflow-hidden group hover:shadow-2xl transition-all duration-300"
+          <div className="flex items-center">
+            {/* Left arrow */}
+            <button
+              onClick={handlePrev}
+              className="p-2 mr-2 rounded-full glass-effect hover:bg-white/20 z-20"
             >
-              <div className="relative overflow-hidden">
-                <img
-                  src={project.image}
-                  alt={project.title}
-                  className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <div className="flex justify-between items-center text-white">
-                      <div className="flex space-x-4">
-                        <motion.a
-                          href={project.github}
-                          whileHover={{ scale: 1.2 }}
-                          className="p-2 bg-white/20 rounded-full hover:bg-white/40 transition-colors"
-                        >
-                          <Github className="w-5 h-5" />
-                        </motion.a>
-                        <motion.a
-                          href={project.demo}
-                          whileHover={{ scale: 1.2 }}
-                          className="p-2 bg-white/20 rounded-full hover:bg-white/40 transition-colors"
-                        >
-                          <ExternalLink className="w-5 h-5" />
-                        </motion.a>
-                        <motion.a
-                          href={project.blog}
-                          whileHover={{ scale: 1.2 }}
-                          className="p-2 bg-white/20 rounded-full hover:bg-white/40 transition-colors"
-                        >
-                          <BookOpen className="w-5 h-5" />
-                        </motion.a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <ChevronLeft className="w-6 h-6" />
+            </button>
 
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xl font-bold group-hover:text-sky-400 transition-colors">
-                    {project.title}
-                  </h3>
-                  <div className="flex items-center space-x-3 text-sm text-gray-400">
-                    <div className="flex items-center space-x-1">
-                      <Star className="w-4 h-4" />
-                      <span>{project.stars}</span>
-                    </div>
-                    <div className="flex items-center space-x-1">
-                      <GitFork className="w-4 h-4" />
-                      <span>{project.forks}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <p className="text-gray-300 mb-4 leading-relaxed">
-                  {project.description}
-                </p>
-
-                <div className="flex flex-wrap gap-2">
-                  {project.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="px-3 py-1 bg-white/10 text-white text-sm rounded-full border border-white/20"
+            {/* Scroll Container */}
+            <div
+              ref={scrollRef}
+              onScroll={handleScroll}
+              className="flex-1 flex overflow-x-auto snap-x snap-mandatory scrollbar-hide scroll-smooth"
+            >
+              <div className="flex w-full">
+                {looped.map((project, index) => {
+                  const isActive = index % total === activeIndex;
+                  return (
+                    <div
+                      key={`${project.id}-${index}`}
+                      // Added 'project-card' class for width calculation
+                      className="flex-shrink-0 w-full sm:w-1/2 md:w-1/3 px-4 snap-center project-card"
                     >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* All Projects Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {projects.filter(p => !p.featured).map((project, index) => (
-            <motion.div
-              key={project.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              whileHover={{ y: -10 }}
-              className="glass-effect rounded-xl overflow-hidden group hover:shadow-xl transition-all duration-300"
-            >
-              <div className="relative overflow-hidden">
-                <img
-                  src={project.image}
-                  alt={project.title}
-                  className="w-full h-32 object-cover group-hover:scale-110 transition-transform duration-300"
-                />
-                <div className="absolute top-2 right-2 flex space-x-1">
-                  <motion.a
-                    href={project.github}
-                    whileHover={{ scale: 1.2 }}
-                    className="p-1.5 bg-black/50 rounded-full hover:bg-black/70 transition-colors"
-                  >
-                    <Github className="w-4 h-4 text-white" />
-                  </motion.a>
-                  <motion.a
-                    href={project.demo}
-                    whileHover={{ scale: 1.2 }}
-                    className="p-1.5 bg-black/50 rounded-full hover:bg-black/70 transition-colors"
-                  >
-                    <ExternalLink className="w-4 h-4 text-white" />
-                  </motion.a>
-                </div>
-              </div>
-
-              <div className="p-4">
-                <h3 className="font-bold mb-2 group-hover:text-sky-400 transition-colors">
-                  {project.title}
-                </h3>
-                <p className="text-gray-300 text-sm mb-3 line-clamp-2">
-                  {project.description}
-                </p>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2 text-xs text-gray-400">
-                    <Star className="w-3 h-3" />
-                    <span>{project.stars}</span>
-                  </div>
-                  <div className="flex flex-wrap gap-1">
-                    {project.tags.slice(0, 2).map((tag) => (
-                      <span
-                        key={tag}
-                        className="px-2 py-0.5 bg-white/10 text-white text-xs rounded"
+                      <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.1 }}
+                        className={`glass-effect rounded-xl overflow-hidden group transition-all duration-300 h-full transform ${
+                          isActive ? 'scale-105 z-10' : 'scale-95 opacity-80'
+                        }`}
                       >
-                        {tag}
-                      </span>
-                    ))}
-                    {project.tags.length > 2 && (
-                      <span className="px-2 py-0.5 bg-gray-500/20 text-gray-400 text-xs rounded">
-                        +{project.tags.length - 2}
-                      </span>
-                    )}
-                  </div>
-                </div>
+                        {/* ... Card content (unchanged) ... */}
+                          <div className="relative overflow-hidden">
+                            <img
+                              src={project.image}
+                              alt={project.title}
+                              className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                              <div className="absolute bottom-4 left-4 right-4">
+                                <div className="flex space-x-4 text-white">
+                                  <a
+                                    href={project.github}
+                                    className="p-2 bg-white/20 rounded-full hover:bg-white/40"
+                                  >
+                                    <Github className="w-5 h-5" />
+                                  </a>
+                                  <a
+                                    href={project.demo}
+                                    className="p-2 bg-white/20 rounded-full hover:bg-white/40"
+                                  >
+                                    <ExternalLink className="w-5 h-5" />
+                                  </a>
+                                  <a
+                                    href={project.blog}
+                                    className="p-2 bg-white/20 rounded-full hover:bg-white/40"
+                                  >
+                                    <BookOpen className="w-5 h-5" />
+                                  </a>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="p-6">
+                            <h3 className="text-xl font-bold mb-2">
+                              {project.title}
+                            </h3>
+                            <p className="text-gray-300 mb-4">
+                              {project.description}
+                            </p>
+                            <div className="flex flex-wrap gap-2">
+                              {project.tags.map((tag) => (
+                                <span
+                                  key={tag}
+                                  className="px-3 py-1 bg-white/10 text-white text-sm rounded-full border border-white/20"
+                                >
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                      </motion.div>
+                    </div>
+                  );
+                })}
               </div>
-            </motion.div>
-          ))}
-        </div>
+            </div>
 
-        {/* View All Projects CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.6 }}
-          className="text-center mt-12"
-        >
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-8 py-3 glass-effect hover:bg-white/10 text-white font-semibold rounded-lg transition-all duration-200 border border-white/20"
-          >
-            View All Projects on GitHub
-          </motion.button>
-        </motion.div>
+            {/* Right arrow */}
+            <button
+              onClick={handleNext}
+              className="p-2 ml-2 rounded-full glass-effect hover:bg-white/20 z-20"
+            >
+              <ChevronRight className="w-6 h-6" />
+            </button>
+          </div>
+
+          {/* Dots */}
+          <div className="flex justify-center mt-4 space-x-2">
+            {featured.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => scrollToIndex(index)}
+                className={`w-3 h-3 rounded-full transition-colors ${
+                  index === activeIndex
+                    ? 'bg-sky-400'
+                    : 'bg-white/30 hover:bg-white/50'
+                }`}
+              ></button>
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );
