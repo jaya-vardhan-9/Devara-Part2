@@ -135,12 +135,12 @@ const ContactSection: React.FC = () => {
             className="glass-effect rounded-xl  p-8 slide-in-left"
           >
             <div className="flex items-center justify-center space-x-3 mb-8">
-              <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center">
+              {/* <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center">
                 <Mail className="w-6 h-6 text-white" />
-              </div>
+              </div> */}
               <div>
-                <h3 className="text-2xl font-bold text-white">General Contact</h3>
-                <p className="text-gray-400 text-sm">Send me a message</p>
+                <h3 className="text-2xl font-bold text-white">Send me a message</h3>
+                {/* <p className="text-gray-400 text-sm">Send me a message</p> */}
               </div>
             </div>
 
