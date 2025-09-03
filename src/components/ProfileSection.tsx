@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ChevronDown, Code, Server, Cloud } from 'lucide-react';
+import {Typewriter} from 'react-simple-typewriter';
 
 const ProfileSection: React.FC = () => {
   return (
@@ -48,13 +49,60 @@ const ProfileSection: React.FC = () => {
             transition={{ delay: 0.4 }}
             className="space-y-4"
           >
-            <h1 className="text-4xl md:text-6xl font-bold">
-              <span className="gradient-text">Alex Thompson</span>
-              <span className="text-gray-300"> | </span>
+                <h1 className="text-4xl md:text-5xl font-bold flex items-center flex-wrap">
+                  <span className="gradient-text mr-2">Jaya Vardhan Narayna</span>
+                  <span className="text-red-500 mx-2">|</span>
+      
+                {/* Fixed-width container for typing effect */}
+                      <span className="text-white inline-block min-w-[250px]">
+                        <Typewriter
+                          words={[
+                            'DevOps Engineer',
+                            'AWS Engineer',
+                            'Site Reliability Engineer',
+                            'Cloud Engineer',
+                            'CI/CD Specialist',
+                            'IaC Expert',
+                          ]}
+                          loop={0}
+                          cursor
+                          cursorStyle="_"
+                          typeSpeed={70}
+                          deleteSpeed={50}
+                          delaySpeed={1500}
+                        />
+                      </span>
+                </h1>
+            {/* <h1 className="text-5xl md:text-5xl font-bold">
+              <span className="gradient-text">Jaya Vardhan Narayna</span>
+              <span className="text-red-"> | </span>
               <span className="text-white">DevOps Engineer</span>
-            </h1>
+            </h1> */}
+
+            {/* <h1 className="text-5xl md:text-5xl font-bold flex flex-wrap items-center">
+      <span className="gradient-text mr-2">Jaya Vardhan Narayna</span>
+      <span className="text-red-500 mx-2">|</span>
+      <span className="text-white">
+        <Typewriter
+          words={[
+            'DevOps Engineer',
+            'AWS Engineer',
+            'Site Reliability Engineer',
+            'Cloud Engineer',
+            'CI/CD Specialist',
+            'IaC Expert',
+          ]}
+          loop={0} // Infinite loop
+          cursor
+          cursorStyle="_"
+          typeSpeed={70}
+          deleteSpeed={50}
+          delaySpeed={1500}
+        />
+      </span>
+    </h1> */}
             
-            <div className="flex justify-center space-x-6 text-gray-400">
+            {/* <div className="flex justify-center space-x-6 text-gray-400">
               <div className="flex items-center space-x-2">
                 <Cloud className="w-5 h-5" />
                 <span className="terminal-font">AWS Certified</span>
@@ -67,7 +115,7 @@ const ProfileSection: React.FC = () => {
                 <Server className="w-5 h-5" />
                 <span className="terminal-font">Kubernetes Expert</span>
               </div>
-            </div>
+            </div> */}
           </motion.div>
 
           {/* Bio */}
@@ -78,13 +126,19 @@ const ProfileSection: React.FC = () => {
             className="max-w-3xl mx-auto space-y-4"
           >
             <p className="text-xl text-gray-300 leading-relaxed">
-              Passionate DevOps engineer with 5+ years of experience building scalable infrastructure and automating deployments. 
-              I bridge the gap between development and operations, creating robust CI/CD pipelines and cloud-native solutions.
+              Passionate DevOps engineer with a strong foundation in building infrastructure from the ground up. 
+              I specialize in designing and automating end-to-end CI/CD pipelines for Java and multi-language stacks, using tools like 
+              Jenkins, Docker, SonarQube, Nexus, and Tomcat. With deep expertise in Ansible, Terraform, and AWS, 
+              I bring clarity to complex deployments by treating infrastructure as code and visualizing architectures with Brainboard. 
+              Currently mastering observability with Prometheus and Grafana, 
+              I'm committed to building reliable, scalable systems that bridge the gap between development and operations.
+              {/* Passionate DevOps engineer with 5+ years of experience building scalable infrastructure and automating deployments. 
+              I bridge the gap between development and operations, creating robust CI/CD pipelines and cloud-native solutions. */}
             </p>
-            <p className="text-lg text-gray-400">
+            {/* <p className="text-lg text-gray-400">
               Specialized in AWS, Kubernetes, and Infrastructure as Code. Always exploring the latest technologies to optimize 
               performance and reduce operational overhead.
-            </p>
+            </p> */}
           </motion.div>
 
           {/* CTA Buttons */}
